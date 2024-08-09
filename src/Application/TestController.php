@@ -15,7 +15,8 @@ final readonly class TestController
 {
     public function __construct(
         private ResponseFactoryInterface $factory,
-        private KernelConfig $config
+        private KernelConfig $config,
+        private TestRepository $repository
     ) {
     }
 
@@ -26,7 +27,8 @@ final readonly class TestController
         $response = $this->factory->createResponse();
         $response->getBody()->write(json_encode([
             'current-time' => $currentTime->format(DateTimeInterface::RFC850),
-            'config_endpoint' => $this->config->getEndpoint()
+            'config_endpoint' => $this->config->getEndpoint(),
+            'is_connected' => $this->repository->testConnection()
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
         return $response;

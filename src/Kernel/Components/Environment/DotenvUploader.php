@@ -26,6 +26,14 @@ final readonly class DotenvUploader
         )->isBoolean();
 
         $this->env->required(Constant::ENDPOINT)->notEmpty();
+
+        $this->env->required(
+            Constant::DATABASE_HOST,
+            Constant::DATABASE_NAME,
+            Constant::DATABASE_USER,
+            Constant::DATABASE_PASSWORD,
+            Constant::DATABASE_PORT,
+        )->notEmpty();
     }
 
     private function getPaths(): array

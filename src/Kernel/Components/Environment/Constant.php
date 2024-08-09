@@ -11,4 +11,9 @@ enum Constant
     case ERROR_DETAILS;
     case USE_SINGLE_ENTRYPOINT;
     case ENDPOINT;
+    case DATABASE_HOST;
+    case DATABASE_NAME;
+    case DATABASE_USER;
+    case DATABASE_PASSWORD;
+    case DATABASE_PORT;
 }
