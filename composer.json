@@ -11,7 +11,8 @@
     "guzzlehttp/guzzle": "^7.8",
     "symfony/string": "^7.1",
     "ramsey/uuid": "^4.7",
-    "php-ds/php-ds": "^1.5"
+    "php-ds/php-ds": "^1.5",
+    "doctrine/dbal": "^4.0"
   },
   "autoload": {
     "psr-4": {

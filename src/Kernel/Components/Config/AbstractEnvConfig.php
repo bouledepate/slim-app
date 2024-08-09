@@ -24,6 +24,10 @@ abstract readonly class AbstractEnvConfig implements EnvConfig
                 $value = null;
             } else {
                 $value = $data[$constant->name] ?? null;
+                if ($value !== null) {
+                    $type = $property->getType()->getName();
+                    $value = self::typecast($value, $type);
+                }
             }
             $property->setValue($instance, $value);
         }
@@ -32,4 +36,14 @@ abstract readonly class AbstractEnvConfig implements EnvConfig
     }
 
     abstract protected function constantMap(): array;
+
+    private static function typecast(mixed $value, string $type): string|int|bool|float
+    {
+        return match ($type) {
+            'string' => (string)$value,
+            'int' => intval($value),
+            'bool' => boolval($value),
+            'float' => floatval($value),
+        };
+    }
 }
