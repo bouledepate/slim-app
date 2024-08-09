@@ -10,9 +10,12 @@ final readonly class DotenvUploader
 {
     private DotenvWrapper $env;
 
-    public function __construct()
+    public function __construct(?string $path = null)
     {
-        $this->env = new DotenvWrapper(Dotenv::createImmutable(paths: $this->getPaths()));
+        if (is_null($path)) {
+            $path = $this->getPaths();
+        }
+        $this->env = new DotenvWrapper(Dotenv::createImmutable($path));
         $this->env->getDotenv()->load();
     }
 

@@ -12,7 +12,8 @@
     "symfony/string": "^7.1",
     "ramsey/uuid": "^4.7",
     "php-ds/php-ds": "^1.5",
-    "doctrine/dbal": "^4.0"
+    "doctrine/dbal": "^4.0",
+    "robmorgan/phinx": "^0.16.2"
   },
   "autoload": {
     "psr-4": {
