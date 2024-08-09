@@ -4,32 +4,33 @@ declare(strict_types=1);
 
 namespace BDP\Kernel;
 
-use BDP\Kernel\Components\Configuration\ConfigurationFactory;
-use BDP\Kernel\Components\Configuration\ConfigurationType;
-use BDP\Kernel\Components\Configuration\KernelConfiguration;
+use BDP\Kernel\Components\Config\ConfigType;
+use BDP\Kernel\Components\Config\EnvConfigFactory;
 use BDP\Kernel\Components\Container\ContainerProvider;
-use BDP\Kernel\Components\Routing\Entrypoint;
-use BDP\Kernel\Components\Routing\EntrypointController;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
-
 use function DI\autowire;
 use function DI\create;
 use function DI\factory;
-use function DI\get;
 
 final readonly class KernelDefinitions implements ContainerProvider
 {
     public function getDefinitions(): array
     {
-        return [
+        $definitions = [
             ResponseFactoryInterface::class => create(Psr17Factory::class),
-            ConfigurationFactory::class => autowire()->constructor($_ENV),
-            KernelConfiguration::class => factory([ConfigurationFactory::class, 'collect'])
-                ->parameter('type', ConfigurationType::Slim),
-            Entrypoint::class => create(EntrypointController::class)->constructor(
-                get(ResponseFactoryInterface::class)
-            )
+            EnvConfigFactory::class => autowire()->constructor($_ENV)
         ];
+        return array_merge($definitions, $this->configurations());
+    }
+
+    private function configurations(): array
+    {
+        $configs = [KernelConfig::class];
+        $instances = array_map(
+            fn(ConfigType $type) => factory([EnvConfigFactory::class, 'produce'])->parameter('type', $type),
+            ConfigType::cases()
+        );
+        return array_combine($configs, $instances);
     }
 }
