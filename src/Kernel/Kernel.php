@@ -2,7 +2,6 @@
 
 namespace BDP\Kernel;
 
-use BDP\Kernel\Components\Configuration\KernelConfiguration;
 use BDP\Kernel\Components\Container\ContainerBuilder;
 use BDP\Kernel\Components\Environment\DotenvUploader;
 use BDP\Kernel\Components\Exception\ExceptionHandler;
@@ -21,7 +20,10 @@ final readonly class Kernel
     {
     }
 
-    /** @throws Exception */
+    /**
+     * @throws Exception
+     * @throws ContainerExceptionInterface
+     */
     public static function create(): Kernel
     {
         $environment = new DotenvUploader();
@@ -44,16 +46,16 @@ final readonly class Kernel
      */
     private function configure(): void
     {
-        /** @var KernelConfiguration $configuration */
-        $configuration = $this->app->getContainer()->get(KernelConfiguration::class);
+        /** @var KernelConfig $configuration */
+        $configuration = $this->app->getContainer()->get(KernelConfig::class);
 
         $this->app->addMiddleware(new JsonMiddleware());
         $this->app->addBodyParsingMiddleware();
 
         $middleware = $this->app->addErrorMiddleware(
-            $configuration->errorDetails(),
-            $configuration->logErrors(),
-            $configuration->logErrorDetails()
+            $configuration->isErrorDetails(),
+            $configuration->isLogErrors(),
+            $configuration->isLogErrorDetails()
         );
         $handler = new ExceptionHandler(
             $this->app->getCallableResolver(),
@@ -61,7 +63,7 @@ final readonly class Kernel
         );
         $middleware->setDefaultErrorHandler($handler);
 
-        if ($configuration->useSingleEntrypoint()) {
+        if ($configuration->isUseSingleEntrypoint()) {
             $this->app->post(
                 pattern: $configuration->getEndpoint(),
                 callable: $this->app->getContainer()->get(Entrypoint::class)
